@@ -1,3 +1,12 @@
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/config/security.php';
+
+$usuarioAutenticado = isset($_SESSION['usuario_id']);
+?>
+
 <!DOCTYPE html>
 
 <html lang="pt-BR">
@@ -33,7 +42,14 @@
         <a href="#inicio">Início</a>
         <a href="#aprenda">Aprenda</a>
         <a href="#simulador">Simulador</a>
-        <a href="login.php">Entrar</a>
+       <!-- <a href="login.php">Entrar</a> -->
+
+	<?php if ($usuarioAutenticado): ?>
+           <a href="/dashboard.php">Dashboard</a>
+           <a href="/logout.php">Sair</a>
+        <?php else: ?>
+           <a href="/login.php">Entrar</a>
+         <?php endif; ?>
     </div>
 
 </nav>
