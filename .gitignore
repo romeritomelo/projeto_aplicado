@@ -1,0 +1,16 @@
+# Arquivos de ambiente
+.env
+.env.*
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+# Backups locais
+*_bkp.*
+*_backup.*
+
+# Arquivos do sistema/IDE
+.DS_Store
+Thumbs.db
+.vscode/
