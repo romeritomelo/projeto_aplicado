@@ -1,71 +1,113 @@
-name: Deploy para VM1
+name: CI/CD - Deploy para VM1
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+push:
+branches:
+- main
+workflow_dispatch:
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Baixar código do repositório
-        uses: actions/checkout@v4
+# ==========================
 
-      - name: Configurar SSH
-        env:
-          PROD_SSH_KEY: ${{ secrets.PROD_SSH_KEY }}
-          PROD_KNOWN_HOSTS: ${{ secrets.PROD_KNOWN_HOSTS }}
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
+# CI - Integração Contínua
 
-          printf '%s\n' "$PROD_SSH_KEY" > ~/.ssh/github_actions
-          chmod 600 ~/.ssh/github_actions
+# ==========================
 
-          printf '%s\n' "$PROD_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
+ci:
+runs-on: ubuntu-latest
 
-      - name: Testar conexão SSH com VM1
-        env:
-          PROD_HOST: ${{ secrets.PROD_HOST }}
-          PROD_USER: ${{ secrets.PROD_USER }}
-        run: |
-          ssh \
-            -i ~/.ssh/github_actions \
-            -o BatchMode=yes \
-            -o StrictHostKeyChecking=yes \
-            "$PROD_USER@$PROD_HOST" \
-            "echo 'Conexão SSH com VM1 OK'"
+```
+steps:
+  - name: Baixar código do repositório
+    uses: actions/checkout@v4
 
-      - name: Sincronizar aplicação com VM1
-        env:
-          PROD_HOST: ${{ secrets.PROD_HOST }}
-          PROD_USER: ${{ secrets.PROD_USER }}
-        run: |
-          rsync \
-            -az \
-            --delete \
-            --exclude='.git/' \
-            --exclude='.github/' \
-            --exclude='.env' \
-            --exclude='.env.*' \
-            --exclude='*_bkp.*' \
-            --exclude='*_backup.*' \
-            -e "ssh -i ~/.ssh/github_actions -o BatchMode=yes -o StrictHostKeyChecking=yes" \
-            ./ \
-            "$PROD_USER@$PROD_HOST:/home/opc/html/"
+  - name: Configurar PHP
+    uses: shivammathur/setup-php@v2
+    with:
+      php-version: '8.4'
 
-      - name: Validar aplicação publicada
-        run: |
-          curl \
-            --fail \
-            --silent \
-            --show-error \
-            --location \
-            https://romeritomelo.seg.br/login.php \
-            > /dev/null
+  - name: Validar sintaxe dos arquivos PHP
+    run: |
+      set -e
 
-          echo "Deploy concluído e aplicação respondendo via HTTPS."
+      find . -type f -name "*.php" \
+        -not -path "./.git/*" \
+        -print0 |
+      while IFS= read -r -d '' file; do
+        echo "Validando: $file"
+        php -l "$file"
+      done
+```
+
+# ==========================
+
+# CD - Entrega/Implantação
+
+# ==========================
+
+deploy:
+needs: ci
+runs-on: ubuntu-latest
+
+```
+steps:
+  - name: Baixar código do repositório
+    uses: actions/checkout@v4
+
+  - name: Configurar SSH
+    env:
+      PROD_SSH_KEY: ${{ secrets.PROD_SSH_KEY }}
+      PROD_KNOWN_HOSTS: ${{ secrets.PROD_KNOWN_HOSTS }}
+    run: |
+      mkdir -p ~/.ssh
+      chmod 700 ~/.ssh
+
+      printf '%s\n' "$PROD_SSH_KEY" > ~/.ssh/github_actions
+      chmod 600 ~/.ssh/github_actions
+
+      printf '%s\n' "$PROD_KNOWN_HOSTS" > ~/.ssh/known_hosts
+      chmod 644 ~/.ssh/known_hosts
+
+  - name: Testar conexão SSH com VM1
+    env:
+      PROD_HOST: ${{ secrets.PROD_HOST }}
+      PROD_USER: ${{ secrets.PROD_USER }}
+    run: |
+      ssh \
+        -i ~/.ssh/github_actions \
+        -o BatchMode=yes \
+        -o StrictHostKeyChecking=yes \
+        "$PROD_USER@$PROD_HOST" \
+        "echo 'Conexão SSH com VM1 OK'"
+
+  - name: Sincronizar aplicação com VM1
+    env:
+      PROD_HOST: ${{ secrets.PROD_HOST }}
+      PROD_USER: ${{ secrets.PROD_USER }}
+    run: |
+      rsync \
+        -az \
+        --delete \
+        --exclude='.git/' \
+        --exclude='.github/' \
+        --exclude='.env' \
+        --exclude='.env.*' \
+        --exclude='*_bkp.*' \
+        --exclude='*_backup.*' \
+        -e "ssh -i ~/.ssh/github_actions -o BatchMode=yes -o StrictHostKeyChecking=yes" \
+        ./ \
+        "$PROD_USER@$PROD_HOST:/home/opc/html/"
+
+  - name: Validar aplicação publicada
+    run: |
+      curl \
+        --fail \
+        --silent \
+        --show-error \
+        --location \
+        https://romeritomelo.seg.br/login.php \
+        > /dev/null
+
+      echo "Deploy concluído e aplicação respondendo via HTTPS."
+```
