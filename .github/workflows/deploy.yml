@@ -1,4 +1,4 @@
-name: CI/CD - Deploy para VM1
+name: Deploy para VM1
 
 on:
   push:
@@ -7,12 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-
-  # ==========================
-  # CD - Entrega/Implantação
-  # ==========================
   deploy:
-    needs: ci
     runs-on: ubuntu-latest
 
     steps:
