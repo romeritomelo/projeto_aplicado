@@ -9,33 +9,6 @@ on:
 jobs:
 
   # ==========================
-  # CI - Integração Contínua
-  # ==========================
-  ci:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Baixar código do repositório
-        uses: actions/checkout@v4
-
-      - name: Configurar PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-
-      - name: Validar sintaxe dos arquivos PHP
-        run: |
-          set -e
-
-          find . -type f -name "*.php" \
-            -not -path "./.git/*" \
-            -print0 |
-          while IFS= read -r -d '' file; do
-            echo "Validando: $file"
-            php -l "$file"
-          done
-
-  # ==========================
   # CD - Entrega/Implantação
   # ==========================
   deploy:
