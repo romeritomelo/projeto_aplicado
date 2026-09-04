@@ -6,9 +6,9 @@ O projeto consiste em uma aplicação web de controle financeiro com autenticaç
 
 ## Objetivo
 
-O projeto tem como objetivo demonstrar a aplicação prática de conceitos de desenvolvimento seguro, segurança de aplicações web e proteção da infraestrutura em ambiente de nuvem.
+O projeto tem como objetivo demonstrar a aplicação prática de conceitos de desenvolvimento seguro, segurança de aplicações web, proteção da infraestrutura e implantação automatizada em ambiente de nuvem.
 
-A aplicação está hospedada na Oracle Cloud Infrastructure (OCI) e utiliza HTTPS com certificado Let's Encrypt.
+A aplicação está hospedada na Oracle Cloud Infrastructure (OCI) e utiliza HTTPS com certificado digital emitido pelo Let's Encrypt.
 
 ## Tecnologias utilizadas
 
@@ -19,10 +19,14 @@ A aplicação está hospedada na Oracle Cloud Infrastructure (OCI) e utiliza HTT
 * Traefik
 * Let's Encrypt
 * Oracle Cloud Infrastructure (OCI)
+* Oracle Linux 9.8
 * Firewalld
 * Fail2Ban
+* Git
 * GitHub
 * GitHub Actions
+* SSH
+* rsync
 
 ## Arquitetura da aplicação
 
@@ -30,6 +34,7 @@ A aplicação utiliza uma organização baseada no padrão MVC, separando respon
 
 ```text
 projeto_aplicado/
+
 ├── app/
 │   ├── Controllers/
 │   ├── Models/
@@ -40,6 +45,9 @@ projeto_aplicado/
 ├── includes/
 ├── js/
 ├── storage/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml
 ├── dashboard.php
 ├── index.php
 ├── login.php
@@ -48,9 +56,11 @@ projeto_aplicado/
 
 As credenciais de acesso ao banco de dados não ficam armazenadas no repositório público. O arquivo `config/database.php` contém somente uma referência para o arquivo real de configuração localizado fora da raiz do projeto:
 
-`/home/opc/database.php`
+```text
+/home/opc/database.php
+```
 
-Dessa forma, informações sensíveis não são disponibilizadas no código público.
+Dessa forma, informações sensíveis de conexão com o banco de dados não são disponibilizadas no código público.
 
 ## Segurança
 
@@ -66,10 +76,15 @@ Foram adotadas diversas medidas de segurança na aplicação e na infraestrutura
 * cabeçalhos HTTP de segurança;
 * HTTPS;
 * HSTS;
+* Content Security Policy (CSP);
 * firewall;
 * Fail2Ban;
 * acesso SSH utilizando autenticação por chave;
-* separação das credenciais do banco de dados do código público.
+* desabilitação da autenticação SSH por senha;
+* separação das credenciais do banco de dados do código público;
+* utilização de `.gitignore`;
+* TLS 1.3 com suporte a mecanismos de troca de chaves pós-quânticos (PQC), quando suportados pelo cliente;
+* implantação automatizada por GitHub Actions.
 
 ## OWASP Top 10 — Mitigações implementadas
 
@@ -100,7 +115,7 @@ A aplicação implementa mecanismos para reduzir riscos relacionados à autentic
 * `logout.php`
 * `dashboard.php`
 
-No `AuthController`, por exemplo, são aplicados limites de cinco tentativas inválidas para uma mesma conta e vinte tentativas para um mesmo endereço IP dentro de uma janela de dez minutos.
+No `AuthController`, são aplicados limites de cinco tentativas inválidas para uma mesma conta e vinte tentativas para um mesmo endereço IP dentro de uma janela de dez minutos.
 
 Após uma autenticação válida, o identificador da sessão é regenerado por meio de `session_regenerate_id(true)`, reduzindo o risco de session fixation.
 
@@ -112,7 +127,7 @@ O HTTPS é terminado no Traefik, que utiliza certificados digitais emitidos pelo
 
 Além da proteção da comunicação, as credenciais de usuários não são armazenadas em texto puro. A autenticação utiliza as funções nativas `password_hash()` e `password_verify()` do PHP.
 
-Também são utilizados mecanismos de proteção do cookie de sessão, reduzindo a exposição do identificador de sessão no navegador.
+Também são utilizados mecanismos de proteção do cookie de sessão, incluindo `Secure`, `HttpOnly` e `SameSite`, reduzindo a exposição do identificador de sessão no navegador.
 
 **Local da implementação:**
 
@@ -133,6 +148,10 @@ Entre as medidas implementadas estão:
 * redirecionamento HTTP para HTTPS;
 * HSTS;
 * Content Security Policy (CSP);
+* `X-Content-Type-Options`;
+* `X-Frame-Options`;
+* `Referrer-Policy`;
+* `Permissions-Policy`;
 * proteção dos cookies de sessão;
 * controle de expiração das sessões;
 * Firewalld ativo na VM;
@@ -175,17 +194,74 @@ A aplicação está hospedada em uma máquina virtual na Oracle Cloud Infrastruc
 A arquitetura utiliza:
 
 * Oracle Linux 9.8;
-* Docker;
-* Traefik como proxy reverso;
-* HTTP3/QUIC implementado;
+* Docker 29.7.2;
+* Traefik 3.7.11 como proxy reverso;
+* HTTP/3 sobre QUIC;
 * Apache/PHP para execução da aplicação;
 * MySQL HeatWave para persistência dos dados;
-* MYSQL HeatWare separado em Subnet privada;
+* MySQL HeatWave protegido em subnet privada na VCN da OCI;
 * Firewalld para controle do tráfego;
 * Fail2Ban para proteção contra tentativas de acesso SSH;
-* Certificado Let's Encrypt para HTTPS.
+* certificado Let's Encrypt para HTTPS.
 
 O acesso administrativo à máquina virtual utiliza autenticação por chave SSH.
+
+## TLS, HTTPS e HSTS
+
+A aplicação utiliza HTTPS com certificado digital emitido pelo Let's Encrypt e gerenciamento automatizado do certificado pelo Traefik.
+
+A configuração TLS disponibiliza TLS 1.2 e TLS 1.3, mantendo desabilitados protocolos obsoletos como TLS 1.0, TLS 1.1, SSL 2 e SSL 3.
+
+Também são utilizados mecanismos de Forward Secrecy.
+
+### HSTS
+
+A aplicação implementa HTTP Strict Transport Security (HSTS) por meio de `config/security.php`.
+
+A política utilizada é:
+
+```http
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+```
+
+Isso determina que o navegador deve utilizar HTTPS durante o período definido de um ano e aplica a política também aos subdomínios.
+
+### HTTP/2 e HTTP/3
+
+O ambiente suporta HTTP/2 e anuncia suporte a HTTP/3 por meio do protocolo QUIC.
+
+O HTTPS é terminado no Traefik, que atua como proxy reverso para a aplicação Apache/PHP.
+
+### SNI
+
+O ambiente utiliza Server Name Indication (SNI) para permitir a seleção do certificado correspondente ao domínio durante o handshake TLS.
+
+Clientes modernos com suporte a SNI recebem o certificado correspondente ao domínio da aplicação.
+
+### Criptografia pós-quântica
+
+A avaliação externa identificou suporte a mecanismos híbridos de troca de chaves pós-quânticos (PQC), incluindo `X25519MLKEM768`, quando suportados pelo cliente.
+
+## Validação externa da configuração TLS
+
+A configuração HTTPS/TLS foi submetida ao **Qualys SSL Labs SSL Server Test**.
+
+**Resultado obtido: A+**
+
+A avaliação identificou, entre outros aspectos:
+
+* certificado confiável emitido pelo Let's Encrypt;
+* certificado RSA de 4096 bits;
+* TLS 1.2 e TLS 1.3;
+* Forward Secrecy;
+* HSTS com longa duração;
+* suporte a SNI;
+* HTTP/2;
+* suporte a HTTP/3;
+* suporte a mecanismos de troca de chaves pós-quânticos;
+* ausência de vulnerabilidades TLS históricas relevantes identificadas pelo teste.
+
+O resultado A+ representa a avaliação da configuração TLS no momento do teste e pode variar após alterações na infraestrutura, certificados ou políticas de segurança.
 
 ## Controle de sessão
 
@@ -201,11 +277,129 @@ São utilizados:
 
 Essas medidas reduzem riscos relacionados ao sequestro e reutilização indevida de sessões.
 
-## Repositório
+## CI/CD — GitHub Actions
 
-O código-fonte do projeto está disponível publicamente no GitHub:
+O projeto utiliza GitHub Actions para automatizar a implantação da aplicação no ambiente de produção.
 
-https://github.com/romeritomelo/projeto_aplicado
+O workflow está localizado em:
+
+```text
+.github/workflows/deploy.yml
+```
+
+O pipeline possui foco em **Continuous Deployment (CD)** e é executado automaticamente quando ocorre um `push` na branch `main`. Também pode ser executado manualmente por meio de `workflow_dispatch`.
+
+### Fluxo de implantação
+
+```text
+Desenvolvimento
+      │
+      ▼
+ git push main
+      │
+      ▼
+    GitHub
+      │
+      ▼
+GitHub Actions
+      │
+      ├── Checkout do código
+      │
+      ├── Configuração segura do SSH
+      │
+      ├── Teste da conexão SSH
+      │
+      ├── Sincronização via rsync
+      │
+      └── Validação pós-deploy
+               │
+               ▼
+          VM1 — OCI
+               │
+               ▼
+       Aplicação em produção
+```
+
+### Etapas do workflow
+
+**1. Checkout**
+
+O GitHub Actions utiliza `actions/checkout` para obter o código do repositório no runner.
+
+**2. Configuração do SSH**
+
+A chave privada utilizada no processo de implantação não é armazenada no código-fonte. Ela é disponibilizada ao workflow por meio do GitHub Secret:
+
+```text
+PROD_SSH_KEY
+```
+
+Também são utilizados os seguintes Secrets:
+
+```text
+PROD_KNOWN_HOSTS
+PROD_HOST
+PROD_USER
+```
+
+O arquivo `known_hosts` é configurado e o SSH utiliza:
+
+```text
+StrictHostKeyChecking=yes
+```
+
+Dessa forma, o workflow não desabilita a verificação da identidade do servidor SSH.
+
+**3. Teste de conectividade**
+
+Antes da implantação, o workflow estabelece uma conexão SSH com a VM1 e verifica se a conexão está funcionando.
+
+**4. Sincronização da aplicação**
+
+A aplicação é sincronizada para:
+
+```text
+/home/opc/html/
+```
+
+na VM1 utilizando `rsync`.
+
+São excluídos do processo de sincronização:
+
+```text
+.git/
+.github/
+.env
+.env.*
+*_bkp.*
+*_backup.*
+```
+
+O uso de `--delete` garante que arquivos removidos do repositório também sejam removidos do diretório de publicação da aplicação na VM1.
+
+As credenciais reais do banco de dados permanecem fora do diretório sincronizado, em:
+
+```text
+/home/opc/database.php
+```
+
+**5. Validação pós-deploy**
+
+Após a sincronização, o workflow executa uma requisição HTTPS para:
+
+```text
+https://romeritomelo.seg.br/login.php
+```
+
+A resposta é validada utilizando `curl --fail`.
+
+Essa etapa funciona como um **smoke test**, verificando se a aplicação publicada está respondendo através de HTTPS após o deploy.
+
+### Características de segurança do pipeline
+
+O pipeline evita o armazenamento de credenciais diretamente no código-fonte e utiliza GitHub Secrets para os dados necessários à conexão com a VM de produção.
+
+A chave SSH privada e as informações de acesso não fazem parte do repositório público.
 
 ## Status do projeto
 
@@ -215,13 +409,25 @@ https://github.com/romeritomelo/projeto_aplicado
 * Logout: concluído
 * HTTPS: configurado
 * Let's Encrypt: configurado
+* HTTP/2: configurado
+* HTTP/3/QUIC: configurado
+* HSTS: configurado
 * SSH por chave: configurado
 * Fail2Ban: configurado
 * `.gitignore`: configurado
 * Repositório público: configurado
 * Documentação de segurança: em conclusão
-* CI/CD com GitHub Actions: em implementação
+* GitHub Actions: configurado
+* Continuous Deployment (CD): configurado
+* Validação pós-deploy: configurada
+* Avaliação Qualys SSL Labs: A+
+
+## Repositório
+
+O código-fonte do projeto está disponível publicamente no GitHub:
+
+https://github.com/romeritomelo/projeto_aplicado
 
 ## Desenvolvimento
 
-O projeto foi desenvolvido com apoio de ferramentas de Inteligência Artificial (Gemini e ChatGpt), utilizadas como recurso auxiliar durante as etapas de análise, desenvolvimento, revisão e implementação de mecanismos de segurança.
+O projeto foi desenvolvido com apoio de ferramentas de Inteligência Artificial (Gemini e ChatGPT), utilizadas como recurso auxiliar durante as etapas de análise, desenvolvimento, revisão e implementação de mecanismos de segurança.
