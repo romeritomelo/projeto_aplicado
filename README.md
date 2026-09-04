@@ -88,55 +88,29 @@ Foram adotadas diversas medidas de segurança na aplicação e na infraestrutura
 
 ## OWASP Top 10 — Mitigações implementadas
 
-### A07 — Authentication Failures
+### A01 — Broken Access Control
 
-A aplicação implementa mecanismos para reduzir riscos relacionados à autenticação e ao gerenciamento de sessões.
+A aplicação implementa controles de acesso no lado do servidor para impedir que usuários não autenticados acessem recursos protegidos.
+
+O acesso ao Dashboard é condicionado à existência de uma sessão autenticada. A verificação é realizada no servidor, não dependendo apenas da ocultação de links ou elementos da interface.
 
 **Principais medidas implementadas:**
 
-* autenticação por e-mail e senha;
-* validação dos dados recebidos no formulário;
-* verificação das credenciais utilizando `password_verify()`;
-* registro das tentativas de autenticação;
-* limitação de tentativas inválidas por conta;
-* limitação de tentativas inválidas por endereço IP;
-* atraso após tentativa de autenticação inválida;
-* regeneração do ID da sessão após autenticação;
-* controle de tempo da sessão;
-* logout com destruição da sessão.
+* verificação da existência de `$_SESSION['usuario_id']` antes do acesso ao Dashboard;
+* redirecionamento de usuários não autenticados para a página de login;
+* proteção das páginas autenticadas por meio de `includes/auth.php`;
+* controle da sessão no servidor;
+* encerramento da sessão no logout.
 
 **Local da implementação:**
 
-* `app/Controllers/AuthController.php`
-* `app/Models/User.php`
-* `app/Models/LoginAttempt.php`
-* `config/security.php`
-* `login.php`
-* `logout.php`
 * `dashboard.php`
-
-No `AuthController`, são aplicados limites de cinco tentativas inválidas para uma mesma conta e vinte tentativas para um mesmo endereço IP dentro de uma janela de dez minutos.
-
-Após uma autenticação válida, o identificador da sessão é regenerado por meio de `session_regenerate_id(true)`, reduzindo o risco de session fixation.
-
-### A04 — Cryptographic Failures
-
-A aplicação utiliza HTTPS para proteger a comunicação entre o cliente e o servidor.
-
-O HTTPS é terminado no Traefik, que utiliza certificados digitais emitidos pelo Let's Encrypt. O ambiente também realiza o redirecionamento das requisições HTTP para HTTPS.
-
-Além da proteção da comunicação, as credenciais de usuários não são armazenadas em texto puro. A autenticação utiliza as funções nativas `password_hash()` e `password_verify()` do PHP.
-
-Também são utilizados mecanismos de proteção do cookie de sessão, incluindo `Secure`, `HttpOnly` e `SameSite`, reduzindo a exposição do identificador de sessão no navegador.
-
-**Local da implementação:**
-
-* `app/Controllers/AuthController.php`
+* `app/Controllers/DashboardController.php`
+* `includes/auth.php`
 * `config/security.php`
-* configuração do Traefik
-* configuração do HTTPS/Let's Encrypt
+* `logout.php`
 
-As credenciais do banco de dados são mantidas fora do repositório público, sendo referenciadas pelo arquivo `config/database.php`.
+Dessa forma, o controle de acesso ocorre no lado do servidor, reduzindo o risco de acesso direto a recursos que exigem autenticação.
 
 ### A02 — Security Misconfiguration
 
@@ -171,6 +145,95 @@ Entre as medidas implementadas estão:
 * configuração do SSH
 
 No ambiente de produção, o Fail2Ban monitora o serviço SSH e bloqueia endereços IP após sucessivas tentativas de autenticação malsucedidas.
+
+### A04 — Cryptographic Failures
+
+A aplicação utiliza HTTPS para proteger a comunicação entre o cliente e o servidor.
+
+O HTTPS é terminado no Traefik, que utiliza certificados digitais emitidos pelo Let's Encrypt. O ambiente também realiza o redirecionamento das requisições HTTP para HTTPS.
+
+Além da proteção da comunicação, as credenciais de usuários não são armazenadas em texto puro. A autenticação utiliza as funções nativas `password_hash()` e `password_verify()` do PHP.
+
+Também são utilizados mecanismos de proteção do cookie de sessão, incluindo `Secure`, `HttpOnly` e `SameSite`, reduzindo a exposição do identificador de sessão no navegador.
+
+**Local da implementação:**
+
+* `app/Controllers/AuthController.php`
+* `config/security.php`
+* configuração do Traefik
+* configuração do HTTPS/Let's Encrypt
+
+As credenciais do banco de dados são mantidas fora do repositório público, sendo referenciadas pelo arquivo `config/database.php`.
+
+### A05 — Injection
+
+A aplicação implementa mecanismos de mitigação contra vulnerabilidades de Injection, especialmente em operações envolvendo o banco de dados e na apresentação de dados controlados pelo usuário.
+
+Nas operações de acesso ao banco de dados são utilizados **PDO Prepared Statements**, com parâmetros vinculados às consultas SQL. Dessa forma, os dados fornecidos pelo usuário não são concatenados diretamente às instruções SQL.
+
+No acesso aos dados de usuários, por exemplo, a consulta utiliza parâmetros nomeados:
+
+```php
+$stmt = $this->pdo->prepare($sql);
+$stmt->execute([
+    'email' => $email
+]);
+```
+
+O registro e a consulta das tentativas de autenticação também utilizam consultas preparadas e parametrizadas.
+
+Além da proteção contra SQL Injection, dados controlados pelo usuário apresentados em HTML são submetidos a codificação de saída utilizando `htmlspecialchars()`.
+
+A aplicação também utiliza Content Security Policy (CSP) como camada adicional de defesa contra ataques relacionados à execução de conteúdo não autorizado no navegador.
+
+**Principais medidas implementadas:**
+
+* utilização de PDO Prepared Statements;
+* utilização de parâmetros vinculados nas consultas SQL;
+* ausência de concatenação direta de dados do usuário em consultas SQL;
+* validação dos dados recebidos;
+* utilização de `htmlspecialchars()` para codificação de saída HTML;
+* Content Security Policy (CSP) como camada adicional de proteção.
+
+**Local da implementação:**
+
+* `app/Models/User.php`
+* `app/Models/LoginAttempt.php`
+* `login.php`
+* `config/security.php`
+
+Essas medidas reduzem significativamente a superfície de ataque relacionada a SQL Injection e a determinadas formas de XSS, contribuindo para a mitigação dos riscos associados ao A05 — Injection.
+
+### A07 — Authentication Failures
+
+A aplicação implementa mecanismos para reduzir riscos relacionados à autenticação e ao gerenciamento de sessões.
+
+**Principais medidas implementadas:**
+
+* autenticação por e-mail e senha;
+* validação dos dados recebidos no formulário;
+* verificação das credenciais utilizando `password_verify()`;
+* registro das tentativas de autenticação;
+* limitação de tentativas inválidas por conta;
+* limitação de tentativas inválidas por endereço IP;
+* atraso após tentativa de autenticação inválida;
+* regeneração do ID da sessão após autenticação;
+* controle de tempo da sessão;
+* logout com destruição da sessão.
+
+**Local da implementação:**
+
+* `app/Controllers/AuthController.php`
+* `app/Models/User.php`
+* `app/Models/LoginAttempt.php`
+* `config/security.php`
+* `login.php`
+* `logout.php`
+* `dashboard.php`
+
+No `AuthController`, são aplicados limites de cinco tentativas inválidas para uma mesma conta e vinte tentativas para um mesmo endereço IP dentro de uma janela de dez minutos.
+
+Após uma autenticação válida, o identificador da sessão é regenerado por meio de `session_regenerate_id(true)`, reduzindo o risco de session fixation.
 
 ## Proteção do repositório
 
