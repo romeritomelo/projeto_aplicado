@@ -17,6 +17,9 @@ O projeto está estruturado em três eixos fundamentais, integrados por uma este
 │ EIXO 3 — DESENVOLVIMENTO                                    │
 │ Aplicação Web                                                │
 │                                                              │
+│ VS Code + Codex                                              │
+│ Desenvolvimento assistido por IA                            │
+│                                                              │
 │ Login → Autenticação → Página Interna → Logout              │
 └────────────────────────────┬─────────────────────────────────┘
                              │
@@ -187,9 +190,9 @@ A aplicação utiliza HTTPS com certificado digital emitido pelo **Let's Encrypt
 
 A emissão e renovação do certificado são gerenciadas automaticamente pelo **Traefik**.
 
-> A infraestrutura utiliza Traefik para gerenciamento do HTTPS/Let's Encrypt, em vez de uma instalação independente do Certbot.
+> A infraestrutura utiliza Traefik para o gerenciamento do HTTPS/Let's Encrypt, assumindo as funções que, em uma arquitetura baseada em Certbot independente, seriam realizadas pelo próprio Certbot.
 
-Foi escolhido Traefik por englobar a função do Certbot, a utilização de domínio/subdominios configurados e a integração com Docker.
+Foi escolhido o Traefik por integrar o gerenciamento de certificados, o proxy reverso, a utilização de domínio/subdomínios configurados e a integração com Docker.
 
 O servidor realiza o redirecionamento do tráfego HTTP para HTTPS.
 
@@ -361,28 +364,102 @@ O projeto utiliza uma organização baseada no padrão MVC.
 
 ## 🏗️ Arquitetura da aplicação
 
+A aplicação utiliza uma organização baseada no padrão **MVC**, separando responsabilidades entre controladores, modelos, serviços e visualizações.
+
+A árvore abaixo apresenta a estrutura atual do projeto, incluindo os subdiretórios e arquivos versionados:
+
 ```text
 projeto_aplicado/
-
-├── app/
-│   ├── Controllers/
-│   ├── Models/
-│   ├── Services/
-│   └── Views/
-├── config/
-├── css/
-├── includes/
-├── js/
+│
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml
+│
+├── app/
+│   ├── Controllers/
+│   │   ├── AuthController.php
+│   │   └── DashboardController.php
+│   │
+│   ├── Models/
+│   │   ├── .gitkeep
+│   │   ├── LoginAttempt.php
+│   │   └── User.php
+│   │
+│   ├── Services/
+│   │   └── .gitkeep
+│   │
+│   └── Views/
+│       ├── auth/
+│       │   ├── .gitkeep
+│       │   └── login.php
+│       │
+│       ├── dashboard/
+│       │   ├── .gitkeep
+│       │   └── index.php
+│       │
+│       └── layouts/
+│           └── .gitkeep
+│
+├── config/
+│   ├── database.php
+│   └── security.php
+│
+├── css/
+│   └── style.css
+│
+├── includes/
+│   └── auth.php
+│
+├── js/
+│   └── app.js
+│
+├── .gitignore
+├── Qualys_SSL_labs_link.txt
+├── Qualys_SSL_labs_report.png
+├── README.md
 ├── dashboard.php
 ├── index.php
 ├── login.php
 └── logout.php
 ```
 
-A arquitetura separa responsabilidades entre controladores, modelos, serviços e visualizações.
+### Organização das camadas
+
+```text
+Controllers
+    ↓
+Controle do fluxo da aplicação
+
+Models
+    ↓
+Acesso e manipulação dos dados
+
+Services
+    ↓
+Serviços auxiliares da aplicação
+
+Views
+    ↓
+Apresentação das interfaces
+
+Config
+    ↓
+Configurações da aplicação e segurança
+
+Includes
+    ↓
+Componentes compartilhados
+
+Arquivos públicos
+    ↓
+Pontos de entrada da aplicação
+
+.github/workflows
+    ↓
+Automação de implantação
+```
+
+A arquitetura separa responsabilidades entre controladores, modelos, serviços e visualizações, mantendo os pontos de entrada públicos separados das camadas internas da aplicação.
 
 ---
 
@@ -395,14 +472,21 @@ O projeto foi desenvolvido com apoio de ferramentas de Inteligência Artificial,
 * revisão de código;
 * depuração;
 * refatoração;
-* implementação de mecanismos de segurança.
+* implementação de mecanismos de segurança;
+* auditoria das implementações de segurança.
 
-Foram utilizadas principalmente:
+O desenvolvimento assistido por IA foi integrado ao ambiente local de desenvolvimento por meio do **Codex integrado ao Visual Studio Code**.
 
-* Gemini;
-* ChatGPT.
+A integração permite utilizar o agente de IA diretamente no ambiente de desenvolvimento, com acesso ao contexto do projeto para atividades de análise, escrita, alteração, revisão, depuração e refatoração do código.
+
+Foi utilizado principalmente:
+
+* **Codex**, integrado ao Visual Studio Code;
+* **ChatGPT**, utilizado como apoio à análise, desenvolvimento, revisão e auditoria do código.
 
 As ferramentas de IA foram utilizadas como apoio ao desenvolvimento seguro e à análise das implementações.
+
+A utilização da Inteligência Artificial não substituiu a análise e validação realizadas pelo desenvolvedor, que permaneceu responsável pelas alterações incorporadas ao projeto.
 
 ---
 
@@ -410,17 +494,17 @@ As ferramentas de IA foram utilizadas como apoio ao desenvolvimento seguro e à 
 
 O protótipo possui a estrutura mínima exigida para autenticação:
 
-### Login
+## Login
 
 A aplicação possui uma tela de login com autenticação por e-mail e senha.
 
-### Página interna
+## Página interna
 
 Após autenticação, o usuário possui acesso ao Dashboard, que é protegido no lado do servidor.
 
 Usuários não autenticados são redirecionados para a página de login.
 
-### Logout
+## Logout
 
 A aplicação possui botão de logout funcional.
 
@@ -581,6 +665,7 @@ Exemplo:
 
 ```php
 $stmt = $this->pdo->prepare($sql);
+
 $stmt->execute([
     'email' => $email
 ]);
@@ -690,38 +775,61 @@ workflow_dispatch
 ## Fluxo de implantação
 
 ```text
-┌───────────────────────┐
-│ Computador local   │
-│                       │
-│ Desenvolvimento       │
-│ Commit + Push         │
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ GitHub                │
-│ Repositório público   │
-└──────────┬────────────┘
-           │
-           │ Push na main
-           ▼
-┌───────────────────────┐
-│ GitHub Actions        │
-│                       │
-│ Checkout              │
-│ SSH                   │
-│ rsync                 │
-│ Smoke test            │
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ VM1 — OCI             │
-│                       │
-│ Traefik               │
-│ Apache/PHP             │
-│ Aplicação             │
-└───────────────────────┘
+┌──────────────────────────────────┐
+│ Computador local                 │
+│                                  │
+│ VS Code + Codex                  │
+│ Desenvolvimento assistido por IA│
+│                                  │
+│ Commit + Push                    │
+└───────────────┬──────────────────┘
+                │
+                ▼
+┌──────────────────────────────────┐
+│ GitHub                           │
+│ Repositório público              │
+└───────────────┬──────────────────┘
+                │
+                │ Push na main
+                ▼
+┌──────────────────────────────────┐
+│ GitHub Actions                   │
+│                                  │
+│ Checkout                         │
+│ SSH                              │
+│ rsync                            │
+│ Smoke test                       │
+└───────────────┬──────────────────┘
+                │
+                ▼
+┌──────────────────────────────────┐
+│ VM1 — OCI                        │
+│                                  │
+│ Traefik                          │
+│ Apache/PHP                       │
+│ Aplicação                        │
+└──────────────────────────────────┘
+```
+
+O fluxo completo do projeto é:
+
+```text
+Desenvolvimento assistido por IA
+            ↓
+        VS Code
+            ↓
+          Codex
+            ↓
+         Git/GitHub
+            ↓
+     GitHub Actions
+            ↓
+        SSH/rsync
+            ↓
+         VM1 OCI
+            ↓
+       Aplicação
+       em produção
 ```
 
 ---
@@ -897,8 +1005,8 @@ A chave SSH utilizada pelo computador local para acessar o GitHub é **distinta*
 * [x] Página interna protegida por autenticação.
 * [x] Logout funcional.
 * [x] Desenvolvimento assistido por Inteligência Artificial.
-* [x] Gemini utilizado como ferramenta de IA.
-* [x] ChatGPT utilizado como ferramenta de IA.
+* [x] Codex integrado ao Visual Studio Code.
+* [x] ChatGPT utilizado como ferramenta de apoio à análise, desenvolvimento e auditoria do código.
 * [x] Proteções contra CSRF.
 * [x] Controle de tentativas de autenticação.
 * [x] Proteção de sessão.
@@ -932,58 +1040,88 @@ O requisito mínimo de três categorias do OWASP Top 10:2025 é superado, com ci
 
 # 📊 Status do Projeto
 
-| Item                  | Status                    |
-| --------------------- | ------------------------- |
-| Aplicação Web         | Concluída                 |
-| Login                 | Concluído                 |
-| Dashboard             | Concluído                 |
-| Logout                | Concluído                 |
-| HTTPS                 | Configurado               |
-| Let's Encrypt         | Configurado               |
-| HTTP/2                | Configurado               |
-| HTTP/3/QUIC           | Configurado               |
-| HSTS                  | Configurado               |
-| SSH por chave         | Configurado               |
-| Fail2Ban              | Configurado               |
-| `.gitignore`          | Configurado               |
-| GitHub público        | Configurado               |
-| GitHub via SSH        | Configurado               |
-| GitHub Actions        | Configurado               |
-| Continuous Deployment | Configurado               |
-| Validação pós-deploy  | Configurada               |
-| Qualys SSL Labs       | A+                        |
-| PQC                   | Suportado                 |
-| OWASP Top 10          | 5 categorias documentadas |
+| Item                             | Status                    |
+| -------------------------------- | ------------------------- |
+| Aplicação Web                    | Concluída                 |
+| Login                            | Concluído                 |
+| Dashboard                        | Concluído                 |
+| Logout                           | Concluído                 |
+| HTTPS                            | Configurado               |
+| Let's Encrypt                    | Configurado               |
+| HTTP/2                           | Configurado               |
+| HTTP/3/QUIC                      | Configurado               |
+| HSTS                             | Configurado               |
+| SSH por chave                    | Configurado               |
+| Fail2Ban                         | Configurado               |
+| `.gitignore`                     | Configurado               |
+| GitHub público                   | Configurado               |
+| GitHub via SSH                   | Configurado               |
+| GitHub Actions                   | Configurado               |
+| Continuous Deployment            | Configurado               |
+| Validação pós-deploy             | Configurada               |
+| Desenvolvimento assistido por IA | Configurado               |
+| Codex integrado ao VS Code       | Configurado               |
+| Qualys SSL Labs                  | A+                        |
+| PQC                              | Suportado                 |
+| OWASP Top 10                     | 5 categorias documentadas |
 
 ---
 
-# 📁 Estrutura resumida do projeto
+# 📁 Estrutura completa do projeto
 
 ```text
 projeto_aplicado/
-│
-├── app/
-│   ├── Controllers/
-│   ├── Models/
-│   ├── Services/
-│   └── Views/
-│
-├── config/
-│
-├── css/
-├── includes/
-├── js/
 │
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml
 │
+├── app/
+│   ├── Controllers/
+│   │   ├── AuthController.php
+│   │   └── DashboardController.php
+│   │
+│   ├── Models/
+│   │   ├── .gitkeep
+│   │   ├── LoginAttempt.php
+│   │   └── User.php
+│   │
+│   ├── Services/
+│   │   └── .gitkeep
+│   │
+│   └── Views/
+│       ├── auth/
+│       │   ├── .gitkeep
+│       │   └── login.php
+│       │
+│       ├── dashboard/
+│       │   ├── .gitkeep
+│       │   └── index.php
+│       │
+│       └── layouts/
+│           └── .gitkeep
+│
+├── config/
+│   ├── database.php
+│   └── security.php
+│
+├── css/
+│   └── style.css
+│
+├── includes/
+│   └── auth.php
+│
+├── js/
+│   └── app.js
+│
+├── .gitignore
+├── Qualys_SSL_labs_link.txt
+├── Qualys_SSL_labs_report.png
+├── README.md
 ├── dashboard.php
 ├── index.php
 ├── login.php
-├── logout.php
-├── README.md
-└── .gitignore
+└── logout.php
 ```
 
 ---
@@ -992,12 +1130,20 @@ projeto_aplicado/
 
 O código-fonte do projeto está disponível publicamente no GitHub:
 
+```text
 https://github.com/romeritomelo/projeto_aplicado
+```
 
 ---
 
 # 🤖 Desenvolvimento com Inteligência Artificial
 
-O projeto foi desenvolvido com apoio de ferramentas de Inteligência Artificial, principalmente **Gemini e ChatGPT**, utilizadas como recurso auxiliar durante as etapas de análise, desenvolvimento, revisão, depuração, refatoração e implementação de mecanismos de segurança.
+O projeto foi desenvolvido com apoio de ferramentas de Inteligência Artificial, principalmente **Codex e ChatGPT**, utilizadas como recurso auxiliar durante as etapas de análise, desenvolvimento, revisão, depuração, refatoração e implementação de mecanismos de segurança.
 
-As ferramentas de IA foram utilizadas como apoio ao desenvolvimento, enquanto a configuração da infraestrutura, operação do ambiente, validação das medidas de segurança e implantação foram realizadas no ambiente do projeto.
+O **Codex** está integrado ao **Visual Studio Code**, fazendo parte do ambiente local de desenvolvimento e permitindo interação com o código e o contexto do projeto durante as atividades de desenvolvimento.
+
+O **ChatGPT** é utilizado como ferramenta complementar para análise técnica, desenvolvimento, revisão e auditoria das implementações.
+
+As ferramentas de IA foram utilizadas como apoio ao desenvolvimento seguro, enquanto a configuração da infraestrutura, operação do ambiente, validação das medidas de segurança e implantação foram realizadas no ambiente do projeto.
+
+O desenvolvedor permanece responsável pela análise, validação e aprovação das alterações incorporadas ao projeto.
