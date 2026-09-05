@@ -16,461 +16,303 @@ $usuarioAutenticado = isset($_SESSION['usuario_id']);
     <meta name="description" content="Finanças+ — educação financeira e simulador de juros compostos">
     <title>Finanças+ | Educação Financeira</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="css/style.css">
-
-
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
 <header class="header">
     <nav class="nav container">
+        <a class="brand" href="#inicio">
+            <span class="mark">F+</span>Finanças<span>+</span>
+        </a>
 
+        <button class="menu" aria-label="Menu">☰</button>
 
-    <a class="brand" href="#inicio">
-        <span class="mark">F+</span>Finanças<span>+</span>
-    </a>
-
-    <button class="menu" aria-label="Menu">☰</button>
-
-    <div class="links">
-        <a href="#inicio">Início</a>
-        <a href="#aprenda">Aprenda</a>
-        <a href="#simulador">Simulador</a>
-       <!-- <a href="login.php">Entrar</a> -->
-
-	<?php if ($usuarioAutenticado): ?>
-           <a href="/dashboard.php">Dashboard</a>
-           <form class="logout-form" method="post" action="/logout.php">
-               <input
-                   type="hidden"
-                   name="csrf_token"
-                   value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"
-               >
-               <button class="logout-button" type="submit">Sair</button>
-           </form>
-        <?php else: ?>
-           <a href="/login.php">Entrar</a>
-         <?php endif; ?>
-    </div>
-
-</nav>
-
-
+        <div class="links">
+            <a href="#inicio">Início</a>
+            <a href="#aprenda">Aprenda</a>
+            <a href="#simulador">Simulador</a>
+            
+            <?php if ($usuarioAutenticado): ?>
+                <a href="/dashboard.php">Dashboard</a>
+                <form class="logout-form" method="post" action="/logout.php">
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"
+                    >
+                    <button class="logout-button" type="submit">Sair</button>
+                </form>
+            <?php else: ?>
+                <a href="/login.php">Entrar</a>
+            <?php endif; ?>
+        </div>
+    </nav>
 </header>
 
 <main>
 
 <section class="hero" id="inicio">
 
-<div class="orb one"></div>
-<div class="orb two"></div>
+    <div class="orb one"></div>
+    <div class="orb two"></div>
 
-<div class="container hero-grid">
+    <div class="container hero-grid">
 
-    <div class="hero-copy reveal">
+        <div class="hero-copy reveal">
+            <small class="eyebrow">EDUCAÇÃO FINANCEIRA</small>
 
-        <small class="eyebrow">EDUCAÇÃO FINANCEIRA</small>
+            <h1>
+                Seu dinheiro deve <em>trabalhar por você.</em>
+            </h1>
 
-        <h1>
-            Seu dinheiro deve <em>trabalhar por você.</em>
-        </h1>
+            <p>
+                Aprenda a organizar suas finanças, tomar decisões melhores
+                e construir um futuro financeiro mais tranquilo.
+            </p>
 
-        <p>
-            Aprenda a organizar suas finanças, tomar decisões melhores
-            e construir um futuro financeiro mais tranquilo.
-        </p>
+            <div class="actions">
+                <a class="btn primary" href="#simulador">
+                    Começar a simular →
+                </a>
 
-        <div class="actions">
-            <a class="btn primary" href="#simulador">
-                Começar a simular →
-            </a>
+                <a class="btn outline" href="#aprenda">
+                    Quero aprender
+                </a>
+            </div>
 
-            <a class="btn outline" href="#aprenda">
-                Quero aprender
-            </a>
+            <div class="trust">
+                ✓ Conteúdo educativo &nbsp;
+                ✓ Simulação gratuita &nbsp;
+                ✓ Área do aluno
+            </div>
         </div>
 
-        <div class="trust">
-            ✓ Conteúdo educativo &nbsp;
-            ✓ Simulação gratuita &nbsp;
-            ✓ Área do aluno
+        <div class="visual reveal delay1">
+            
+            <!-- CONTAINER DA FOTO ADICIONADO AQUI -->
+            <div class="foto-destaque-container">
+                <img src="css/eu.png" alt="Romerito Melo" class="foto-perfil-redonda">
+            </div>
+
+            <div class="dashboard">
+                <div class="dash-top">
+                    <span>Patrimônio projetado</span>
+                    <b>●</b>
+                </div>
+
+                <strong>R$ 84.750,00</strong>
+
+                <div class="mini">
+                    <svg viewBox="0 0 500 180" preserveAspectRatio="none">
+                        <path
+                            class="fill"
+                            d="M0 160 C55 150 75 130 120 138 S180 115 220 120 S270 88 310 98 S360 60 395 72 S450 30 500 22 L500 180 L0 180Z"
+                        />
+                        <path
+                            class="line"
+                            d="M0 160 C55 150 75 130 120 138 S180 115 220 120 S270 88 310 98 S360 60 395 72 S450 30 500 22"
+                        />
+                    </svg>
+                </div>
+
+                <div class="dash-bottom">
+                    <span>+18,4%</span>
+                    <span>12 meses</span>
+                </div>
+            </div>
+
+            <div class="float goal">
+                🎯
+                <div>
+                    <small>Meta mensal</small>
+                    <b>R$ 500</b>
+                </div>
+            </div>
+
+            <div class="float saved">
+                💰
+                <div>
+                    <small>Economizado</small>
+                    <b>R$ 7.280</b>
+                </div>
+            </div>
+
         </div>
 
     </div>
-
-    <div class="visual reveal delay1">
-
-        <div class="dashboard">
-
-            <div class="dash-top">
-                <span>Patrimônio projetado</span>
-                <b>●</b>
-            </div>
-
-            <strong>R$ 84.750,00</strong>
-
-            <div class="mini">
-                <svg viewBox="0 0 500 180" preserveAspectRatio="none">
-                    <path
-                        class="fill"
-                        d="M0 160 C55 150 75 130 120 138 S180 115 220 120 S270 88 310 98 S360 60 395 72 S450 30 500 22 L500 180 L0 180Z"
-                    />
-                    <path
-                        class="line"
-                        d="M0 160 C55 150 75 130 120 138 S180 115 220 120 S270 88 310 98 S360 60 395 72 S450 30 500 22"
-                    />
-                </svg>
-            </div>
-
-            <div class="dash-bottom">
-                <span>+18,4%</span>
-                <span>12 meses</span>
-            </div>
-
-        </div>
-
-        <div class="float goal">
-            🎯
-            <div>
-                <small>Meta mensal</small>
-                <b>R$ 500</b>
-            </div>
-        </div>
-
-        <div class="float saved">
-            💰
-            <div>
-                <small>Economizado</small>
-                <b>R$ 7.280</b>
-            </div>
-        </div>
-
-    </div>
-
-</div>
-
 
 </section>
 
 <section class="section" id="aprenda">
+    <div class="container">
+        <div class="heading reveal">
+            <small class="eyebrow">PRIMEIROS PASSOS</small>
+            <h2>Uma vida financeira melhor começa com três hábitos.</h2>
+            <p>Conhecimento, organização e constância fazem mais diferença do que procurar uma fórmula mágica.</p>
+        </div>
 
+        <div class="cards">
+            <article class="card reveal">
+                <div class="icon">💰</div>
+                <small>01</small>
+                <h3>Organize</h3>
+                <p>Saiba quanto entra, quanto sai e para onde seu dinheiro está indo.</p>
+            </article>
 
-<div class="container">
+            <article class="card reveal delay1">
+                <div class="icon">📊</div>
+                <small>02</small>
+                <h3>Planeje</h3>
+                <p>Transforme objetivos em metas financeiras claras e mensuráveis.</p>
+            </article>
 
-    <div class="heading reveal">
-
-        <small class="eyebrow">PRIMEIROS PASSOS</small>
-
-        <h2>
-            Uma vida financeira melhor começa com três hábitos.
-        </h2>
-
-        <p>
-            Conhecimento, organização e constância fazem mais diferença
-            do que procurar uma fórmula mágica.
-        </p>
-
+            <article class="card reveal delay2">
+                <div class="icon">📈</div>
+                <small>03</small>
+                <h3>Invista</h3>
+                <p>Conheça as opções de investimento e o efeito dos juros compostos.</p>
+            </article>
+        </div>
     </div>
-
-    <div class="cards">
-
-        <article class="card reveal">
-
-            <div class="icon">💰</div>
-
-            <small>01</small>
-
-            <h3>Organize</h3>
-
-            <p>
-                Saiba quanto entra, quanto sai e para onde seu dinheiro está indo.
-            </p>
-
-        </article>
-
-        <article class="card reveal delay1">
-
-            <div class="icon">📊</div>
-
-            <small>02</small>
-
-            <h3>Planeje</h3>
-
-            <p>
-                Transforme objetivos em metas financeiras claras e mensuráveis.
-            </p>
-
-        </article>
-
-        <article class="card reveal delay2">
-
-            <div class="icon">📈</div>
-
-            <small>03</small>
-
-            <h3>Invista</h3>
-
-            <p>
-                Conheça as opções de investimento e o efeito dos juros compostos.
-            </p>
-
-        </article>
-
-    </div>
-
-</div>
-
-
 </section>
 
 <section class="sim-section" id="simulador">
+    <div class="container sim-grid">
+        <div class="sim-copy reveal">
+            <small class="eyebrow">SIMULADOR</small>
+            <h2>Veja o poder dos juros compostos.</h2>
+            <p>Faça uma projeção educativa do crescimento do seu patrimônio. Não é recomendação de investimento.</p>
 
-
-<div class="container sim-grid">
-
-    <div class="sim-copy reveal">
-
-        <small class="eyebrow">SIMULADOR</small>
-
-        <h2>
-            Veja o poder dos juros compostos.
-        </h2>
-
-        <p>
-            Faça uma projeção educativa do crescimento do seu patrimônio.
-            Não é recomendação de investimento.
-        </p>
-
-        <div class="tip">
-
-            💡
-
-            <div>
-                <b>Uma regra importante</b>
-
-                <p>
-                    Tempo e aportes consistentes podem fazer grande diferença
-                    no longo prazo.
-                </p>
+            <div class="tip">
+                💡
+                <div>
+                    <b>Uma regra importante</b>
+                    <p>Tempo e aportes consistentes podem fazer grande diferença no longo prazo.</p>
+                </div>
             </div>
-
         </div>
 
-    </div>
+        <div class="sim-card reveal delay1">
+            <form id="form">
+                <div class="inputs">
+                    <label>
+                        Investimento inicial
+                        <div class="input">
+                            <span>R$</span>
+                            <input id="initial" type="number" value="1000" min="0">
+                        </div>
+                    </label>
 
+                    <label>
+                        Aporte mensal
+                        <div class="input">
+                            <span>R$</span>
+                            <input id="monthly" type="number" value="300" min="0">
+                        </div>
+                    </label>
 
-    <div class="sim-card reveal delay1">
+                    <label>
+                        Taxa mensal
+                        <div class="input">
+                            <input id="rate" type="number" value="0.8" min="0" step="0.1">
+                            <span>%</span>
+                        </div>
+                    </label>
 
-        <form id="form">
+                    <label>
+                        Período
+                        <div class="input">
+                            <input id="months" type="number" value="60" min="1">
+                            <span>meses</span>
+                        </div>
+                    </label>
+                </div>
 
-            <div class="inputs">
+                <button class="btn primary full">Calcular projeção →</button>
+            </form>
 
-                <label>
-                    Investimento inicial
-
-                    <div class="input">
-                        <span>R$</span>
-                        <input
-                            id="initial"
-                            type="number"
-                            value="1000"
-                            min="0"
-                        >
-                    </div>
-                </label>
-
-
-                <label>
-                    Aporte mensal
-
-                    <div class="input">
-                        <span>R$</span>
-                        <input
-                            id="monthly"
-                            type="number"
-                            value="300"
-                            min="0"
-                        >
-                    </div>
-                </label>
-
-
-                <label>
-                    Taxa mensal
-
-                    <div class="input">
-                        <input
-                            id="rate"
-                            type="number"
-                            value="0.8"
-                            min="0"
-                            step="0.1"
-                        >
-                        <span>%</span>
-                    </div>
-                </label>
-
-
-                <label>
-                    Período
-
-                    <div class="input">
-                        <input
-                            id="months"
-                            type="number"
-                            value="60"
-                            min="1"
-                        >
-                        <span>meses</span>
-                    </div>
-                </label>
-
+            <div class="results">
+                <div>
+                    <small>Total investido</small>
+                    <b id="invested">R$ 0,00</b>
+                </div>
+                <div>
+                    <small>Rendimentos</small>
+                    <b id="earnings">R$ 0,00</b>
+                </div>
+                <div class="highlight">
+                    <small>Valor projetado</small>
+                    <b id="future">R$ 0,00</b>
+                </div>
             </div>
 
-            <button class="btn primary full">
-                Calcular projeção →
-            </button>
-
-        </form>
-
-
-        <div class="results">
-
-            <div>
-                <small>Total investido</small>
-                <b id="invested">R$ 0,00</b>
-            </div>
-
-            <div>
-                <small>Rendimentos</small>
-                <b id="earnings">R$ 0,00</b>
-            </div>
-
-            <div class="highlight">
-                <small>Valor projetado</small>
-                <b id="future">R$ 0,00</b>
-            </div>
-
+            <canvas id="growth"></canvas>
         </div>
-
-        <canvas id="growth"></canvas>
-
     </div>
-
-</div>
-
-
 </section>
 
 <section class="section" id="metas">
+    <div class="container goal-grid">
+        <div class="heading reveal">
+            <small class="eyebrow">METAS FINANCEIRAS</small>
+            <h2>Transforme sonhos em números.</h2>
+            <p>Uma meta clara facilita acompanhar o progresso e manter a disciplina.</p>
+        </div>
 
-
-<div class="container goal-grid">
-
-    <div class="heading reveal">
-
-        <small class="eyebrow">METAS FINANCEIRAS</small>
-
-        <h2>
-            Transforme sonhos em números.
-        </h2>
-
-        <p>
-            Uma meta clara facilita acompanhar o progresso e manter a disciplina.
-        </p>
-
+        <div class="goal-card reveal delay1">
+            <div class="goal-head">
+                <b>Reserva de emergência</b>
+                <strong id="percent">64%</strong>
+            </div>
+            <div class="progress">
+                <span id="progress"></span>
+            </div>
+            <div class="goal-values">
+                <span>R$ 6.400</span>
+                <span>R$ 10.000</span>
+            </div>
+            <div class="goal-foot">
+                <span>Faltam R$ 3.600</span>
+                <button id="advance">Registrar progresso</button>
+            </div>
+        </div>
     </div>
-
-
-    <div class="goal-card reveal delay1">
-
-        <div class="goal-head">
-            <b>Reserva de emergência</b>
-            <strong id="percent">64%</strong>
-        </div>
-
-        <div class="progress">
-            <span id="progress"></span>
-        </div>
-
-        <div class="goal-values">
-            <span>R$ 6.400</span>
-            <span>R$ 10.000</span>
-        </div>
-
-        <div class="goal-foot">
-            <span>Faltam R$ 3.600</span>
-            <button id="advance">
-                Registrar progresso
-            </button>
-        </div>
-
-    </div>
-
-</div>
-
-
 </section>
 
 <section class="quote">
-
-
-<div class="container reveal">
-
-    <span>“</span>
-
-    <p>
-        Educação financeira não é sobre ficar rico rapidamente.
-        É sobre fazer escolhas conscientes com o dinheiro que você tem.
-    </p>
-
-</div>
-
-
+    <div class="container reveal">
+        <span>“</span>
+        <p>Educação financeira não é sobre ficar rico rapidamente. É sobre fazer escolhas conscientes com o dinheiro que você tem.</p>
+    </div>
 </section>
 
 </main>
 
 <footer>
+    <div class="container footer">
+        <div>
+            <a class="brand" href="#inicio">
+                <span class="mark">F+</span>Finanças<span>+</span>
+            </a>
+            <p>Conhecimento para decisões financeiras melhores.</p>
+        </div>
 
+        <div class="footer-links">
+            <a href="#aprenda">Aprenda</a>
+            <a href="#simulador">Simulador</a>
+            <a href="#metas">Metas</a>
+        </div>
 
-<div class="container footer">
-
-    <div>
-
-        <a class="brand" href="#inicio">
-            <span class="mark">F+</span>Finanças<span>+</span>
-        </a>
-
-        <p>
-            Conhecimento para decisões financeiras melhores.
-        </p>
-
+        <small>
+            © <span id="year"></span> Finanças+. by Romerito Melo
+        </small>
     </div>
-
-
-    <div class="footer-links">
-
-        <a href="#aprenda">Aprenda</a>
-        <a href="#simulador">Simulador</a>
-        <a href="#metas">Metas</a>
-
-    </div>
-
-
-    <small>
-        © <span id="year"></span> Finanças+. by Romerito Melo
-    </small>
-
-</div>
-
-
 </footer>
 
 <script src="js/app.js"></script>
