@@ -119,7 +119,7 @@ declare(strict_types=1);
                 </small>
 
                 <h3>
-                    R$ 6.400,00
+                    R$ 6.000,00
                 </h3>
 
                 <p>
