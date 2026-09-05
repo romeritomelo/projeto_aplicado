@@ -106,7 +106,7 @@ $usuarioAutenticado = isset($_SESSION['usuario_id']);
                     <b>●</b>
                 </div>
 
-                <strong>R$ 84.750,00</strong>
+                <strong>R$ 10.000,00</strong>
 
                 <div class="mini">
                     <svg viewBox="0 0 500 180" preserveAspectRatio="none">
@@ -122,7 +122,7 @@ $usuarioAutenticado = isset($_SESSION['usuario_id']);
                 </div>
 
                 <div class="dash-bottom">
-                    <span>+18,4%</span>
+                    <span>+11,4%</span>
                     <span>12 meses</span>
                 </div>
             </div>
@@ -139,7 +139,7 @@ $usuarioAutenticado = isset($_SESSION['usuario_id']);
                 💰
                 <div>
                     <small>Economizado</small>
-                    <b>R$ 7.280</b>
+                    <b>R$ 1.780</b>
                 </div>
             </div>
 
