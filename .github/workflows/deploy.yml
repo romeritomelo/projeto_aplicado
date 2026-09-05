@@ -48,6 +48,7 @@ jobs:
           rsync \
             -az \
             --checksum \
+            --itemize-changes \
             --delete \
             --exclude='.git/' \
             --exclude='.github/' \
