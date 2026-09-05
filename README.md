@@ -54,7 +54,7 @@ projeto_aplicado/
 └── logout.php
 ```
 
-As credenciais de acesso ao banco de dados não ficam armazenadas no repositório público. O arquivo `config/database.php` contém somente uma referência para o arquivo real de configuração localizado fora da raiz do projeto:
+As credenciais de acesso ao banco de dados não ficam armazenadas no repositório público.. O arquivo `config/database.php` contém somente uma referência para o arquivo real de configuração localizado fora da raiz do projeto:
 
 ```text
 /home/opc/database.php
