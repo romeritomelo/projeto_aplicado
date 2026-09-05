@@ -56,9 +56,23 @@ declare(strict_types=1);
             Dashboard
         </a>
 
-        <a href="/logout.php">
-            Sair
-        </a>
+        <form class="logout-form" method="post" action="/logout.php">
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="<?= htmlspecialchars(
+                    $_SESSION['csrf_token'],
+                    ENT_QUOTES | ENT_SUBSTITUTE,
+                    'UTF-8'
+                ) ?>"
+            >
+
+            <button class="logout-button" type="submit">
+                Sair
+            </button>
+
+        </form>
 
     </div>
 

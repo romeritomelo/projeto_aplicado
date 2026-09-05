@@ -221,7 +221,7 @@ LOGIN — RESPONSIVO
 
 @media (max-width: 560px) {
 
-```
+
 .login-header {
     height: 68px;
 }
@@ -248,7 +248,7 @@ LOGIN — RESPONSIVO
 .login-footer {
     padding: 18px 14px;
 }
-```
+
 
 }
 
@@ -354,4 +354,23 @@ color: var(--blue);
 
 @media (max-width: 560px) {
 
+}
+
+/* Mantém o botão de logout visualmente consistente com os links do menu. */
+.logout-form {
+display: inline;
+}
+
+.logout-button {
+border: 0;
+padding: 0;
+background: none;
+color: inherit;
+font: inherit;
+font-weight: inherit;
+cursor: pointer;
+}
+
+.logout-button:hover {
+color: var(--blue);
 }

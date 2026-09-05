@@ -373,7 +373,6 @@ projeto_aplicado/
 ├── css/
 ├── includes/
 ├── js/
-├── storage/
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml
@@ -974,7 +973,6 @@ projeto_aplicado/
 ├── css/
 ├── includes/
 ├── js/
-├── storage/
 │
 ├── .github/
 │   └── workflows/

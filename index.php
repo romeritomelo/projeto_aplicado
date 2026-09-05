@@ -46,7 +46,14 @@ $usuarioAutenticado = isset($_SESSION['usuario_id']);
 
 	<?php if ($usuarioAutenticado): ?>
            <a href="/dashboard.php">Dashboard</a>
-           <a href="/logout.php">Sair</a>
+           <form class="logout-form" method="post" action="/logout.php">
+               <input
+                   type="hidden"
+                   name="csrf_token"
+                   value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"
+               >
+               <button class="logout-button" type="submit">Sair</button>
+           </form>
         <?php else: ?>
            <a href="/login.php">Entrar</a>
          <?php endif; ?>

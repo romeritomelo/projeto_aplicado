@@ -474,6 +474,21 @@ class AuthController
     public function logout(): void
     {
         /*
+         * O encerramento de sessão altera o estado da aplicação;
+         * por isso, aceita somente POST protegido por token CSRF.
+         */
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Allow: POST');
+            http_response_code(405);
+            exit;
+        }
+
+        if (!$this->validarCsrf()) {
+            http_response_code(403);
+            exit;
+        }
+
+        /*
          * Remove todos os dados armazenados
          * na sessão atual.
          */
