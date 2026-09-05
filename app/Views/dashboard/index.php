@@ -111,7 +111,7 @@ declare(strict_types=1);
             <article class="card">
 
                 <div class="icon">
-                    ??
+                    
                 </div>
 
                 <small>
@@ -119,7 +119,7 @@ declare(strict_types=1);
                 </small>
 
                 <h3>
-                    R$ 0,00
+                    R$ 6.400,00
                 </h3>
 
                 <p>
@@ -131,7 +131,7 @@ declare(strict_types=1);
             <article class="card">
 
                 <div class="icon">
-                    ??
+                    
                 </div>
 
                 <small>
@@ -139,7 +139,7 @@ declare(strict_types=1);
                 </small>
 
                 <h3>
-                    R$ 0,00
+                    R$ 1.000,00
                 </h3>
 
                 <p>
@@ -151,7 +151,7 @@ declare(strict_types=1);
             <article class="card">
 
                 <div class="icon">
-                    ??
+                    
                 </div>
 
                 <small>
@@ -159,7 +159,7 @@ declare(strict_types=1);
                 </small>
 
                 <h3>
-                    R$ 0,00
+                    R$ 5.000,00
                 </h3>
 
                 <p>
