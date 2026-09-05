@@ -54,7 +54,7 @@ projeto_aplicado/
 └── logout.php
 ```
 
-As credenciais de acesso ao banco de dados não ficam armazenadas no repositório público.. O arquivo `config/database.php` contém somente uma referência para o arquivo real de configuração localizado fora da raiz do projeto:
+As credenciais de acesso ao banco de dados não ficam armazenadas no repositório público. O arquivo `config/database.php` contém somente uma referência para o arquivo real de configuração localizado fora da raiz do projeto:
 
 ```text
 /home/opc/database.php
@@ -249,6 +249,16 @@ Entre os arquivos e padrões ignorados estão:
 * configurações locais do VS Code.
 
 As credenciais reais do banco de dados permanecem fora do repositório público.
+
+## Configuração segura do GitHub
+
+O acesso ao repositório a partir do ambiente de desenvolvimento utiliza autenticação por chave SSH. A chave privada permanece armazenada localmente e não faz parte do repositório.
+
+O repositório utiliza o remote SSH:
+
+`git@github.com:romeritomelo/projeto_aplicado.git`
+
+A implantação automatizada utiliza uma chave SSH distinta, armazenada de forma segura nos GitHub Secrets para acesso à VM de produção.
 
 ## Infraestrutura
 
