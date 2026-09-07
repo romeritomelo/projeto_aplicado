@@ -15,10 +15,10 @@ O projeto está estruturado em três eixos fundamentais, integrados por uma este
 ```text
 ┌──────────────────────────────────────────────────────────────┐
 │ EIXO 3 — DESENVOLVIMENTO                                    │
-│ Aplicação Web                                                │
+│ Aplicação Web                                               │
 │                                                              │
-│ VS Code + Codex                                              │
-│ Desenvolvimento assistido por IA                            │
+│ VS Code + Codex                                             │
+│ Desenvolvimento assistido por IA                           │
 │                                                              │
 │ Login → Autenticação → Página Interna → Logout              │
 └────────────────────────────┬─────────────────────────────────┘
@@ -27,7 +27,7 @@ O projeto está estruturado em três eixos fundamentais, integrados por uma este
                              │
                              ▼
 ┌──────────────────────────────────────────────────────────────┐
-│ EIXO 2 — REPOSITÓRIO                                         │
+│ EIXO 2 — REPOSITÓRIO                                        │
 │ GitHub público                                               │
 │                                                              │
 │ Versionamento + Segurança + GitHub Secrets                   │
@@ -37,10 +37,10 @@ O projeto está estruturado em três eixos fundamentais, integrados por uma este
                              │
                              ▼
 ┌──────────────────────────────────────────────────────────────┐
-│ EIXO 1 — INFRAESTRUTURA                                      │
-│ Oracle Cloud Infrastructure                                  │
+│ EIXO 1 — INFRAESTRUTURA                                     │
+│ Oracle Cloud Infrastructure                                 │
 │                                                              │
-│ Traefik → Apache/PHP → Aplicação → MySQL HeatWave           │
+│ Traefik → Apache/PHP → Aplicação → MySQL HeatWave            │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -266,11 +266,21 @@ quando suportados pelo cliente.
 
 A configuração HTTPS/TLS foi submetida ao **Qualys SSL Labs SSL Server Test**.
 
-### Resultado
+## Resultado
 
 ```text
 A+
 ```
+
+### Relatório
+
+O relatório completo pode ser consultado diretamente no Qualys SSL Labs:
+
+[**🔗 Consultar relatório completo no Qualys SSL Labs**](https://www.ssllabs.com/ssltest/analyze.html?d=romeritomelo.seg.br)
+
+### Evidência da avaliação
+
+![Relatório Qualys SSL Labs](css/Qualys_SSL_labs_report.png)
 
 A avaliação identificou:
 
@@ -370,6 +380,7 @@ A árvore abaixo apresenta a estrutura atual do projeto, incluindo os subdiretó
 
 ```text
 projeto_aplicado/
+
 │
 ├── .github/
 │   └── workflows/
@@ -378,7 +389,9 @@ projeto_aplicado/
 ├── app/
 │   ├── Controllers/
 │   │   ├── AuthController.php
-│   │   └── DashboardController.php
+│   │   ├── Controller.php
+│   │   ├── DashboardController.php
+│   │   └── SecurityController.php
 │   │
 │   ├── Models/
 │   │   ├── .gitkeep
@@ -405,6 +418,7 @@ projeto_aplicado/
 │   └── security.php
 │
 ├── css/
+│   ├── Qualys_SSL_labs_report.png
 │   └── style.css
 │
 ├── includes/
@@ -414,8 +428,6 @@ projeto_aplicado/
 │   └── app.js
 │
 ├── .gitignore
-├── Qualys_SSL_labs_link.txt
-├── Qualys_SSL_labs_report.png
 ├── README.md
 ├── dashboard.php
 ├── index.php
@@ -427,35 +439,51 @@ projeto_aplicado/
 
 ```text
 Controllers
+
     ↓
+
 Controle do fluxo da aplicação
 
 Models
+
     ↓
+
 Acesso e manipulação dos dados
 
 Services
+
     ↓
+
 Serviços auxiliares da aplicação
 
 Views
+
     ↓
+
 Apresentação das interfaces
 
 Config
+
     ↓
+
 Configurações da aplicação e segurança
 
 Includes
+
     ↓
+
 Componentes compartilhados
 
 Arquivos públicos
+
     ↓
+
 Pontos de entrada da aplicação
 
 .github/workflows
+
     ↓
+
 Automação de implantação
 ```
 
@@ -578,9 +606,13 @@ Usuários não autenticados são redirecionados para:
 
 ```text
 dashboard.php
+
 app/Controllers/DashboardController.php
+
 includes/auth.php
+
 config/security.php
+
 logout.php
 ```
 
@@ -613,10 +645,15 @@ Foram adotadas medidas para reduzir configurações inseguras na aplicação e n
 
 ```text
 config/security.php
+
 .gitignore
+
 Traefik
+
 Firewalld
+
 Fail2Ban
+
 SSH
 ```
 
@@ -634,6 +671,7 @@ A autenticação utiliza:
 
 ```php
 password_hash()
+
 password_verify()
 ```
 
@@ -649,9 +687,13 @@ SameSite
 
 ```text
 app/Controllers/AuthController.php
+
 config/security.php
+
 config/database.php
+
 Traefik
+
 HTTPS/Let's Encrypt
 ```
 
@@ -694,8 +736,11 @@ e Content Security Policy como camada adicional de proteção.
 
 ```text
 app/Models/User.php
+
 app/Models/LoginAttempt.php
+
 login.php
+
 config/security.php
 ```
 
@@ -724,7 +769,9 @@ O `AuthController` utiliza:
 
 ```text
 5 tentativas inválidas por conta
+
 20 tentativas inválidas por IP
+
 Janela: 10 minutos
 ```
 
@@ -740,11 +787,17 @@ reduzindo o risco de session fixation.
 
 ```text
 app/Controllers/AuthController.php
+
 app/Models/User.php
+
 app/Models/LoginAttempt.php
+
 config/security.php
+
 login.php
+
 logout.php
+
 dashboard.php
 ```
 
@@ -815,20 +868,35 @@ O fluxo completo do projeto é:
 
 ```text
 Desenvolvimento assistido por IA
+
             ↓
+
         VS Code
+
             ↓
+
           Codex
+
             ↓
+
          Git/GitHub
+
             ↓
+
      GitHub Actions
+
             ↓
+
         SSH/rsync
+
             ↓
+
          VM1 OCI
+
             ↓
+
        Aplicação
+
        em produção
 ```
 
@@ -842,8 +910,11 @@ O workflow utiliza GitHub Secrets:
 
 ```text
 PROD_SSH_KEY
+
 PROD_KNOWN_HOSTS
+
 PROD_HOST
+
 PROD_USER
 ```
 
@@ -903,10 +974,15 @@ São excluídos:
 
 ```text
 .git/
+
 .github/
+
 .env
+
 .env.*
+
 *_bkp.*
+
 *_backup.*
 ```
 
@@ -1071,6 +1147,7 @@ O requisito mínimo de três categorias do OWASP Top 10:2025 é superado, com ci
 
 ```text
 projeto_aplicado/
+
 │
 ├── .github/
 │   └── workflows/
@@ -1079,7 +1156,9 @@ projeto_aplicado/
 ├── app/
 │   ├── Controllers/
 │   │   ├── AuthController.php
-│   │   └── DashboardController.php
+│   │   ├── Controller.php
+│   │   ├── DashboardController.php
+│   │   └── SecurityController.php
 │   │
 │   ├── Models/
 │   │   ├── .gitkeep
@@ -1106,6 +1185,7 @@ projeto_aplicado/
 │   └── security.php
 │
 ├── css/
+│   ├── Qualys_SSL_labs_report.png
 │   └── style.css
 │
 ├── includes/
@@ -1115,8 +1195,6 @@ projeto_aplicado/
 │   └── app.js
 │
 ├── .gitignore
-├── Qualys_SSL_labs_link.txt
-├── Qualys_SSL_labs_report.png
 ├── README.md
 ├── dashboard.php
 ├── index.php
