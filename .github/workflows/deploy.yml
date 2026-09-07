@@ -57,6 +57,8 @@ jobs:
             --exclude='.env.*' \
             --exclude='*_bkp.*' \
             --exclude='*_backup.*' \
+            --include='css/Qualys_SSL_labs_report.png' \
+            --exclude='css/*.png' \
             -e "ssh -i ~/.ssh/github_actions -o BatchMode=yes -o StrictHostKeyChecking=yes" \
             ./ \
             "$PROD_USER@$PROD_HOST:/home/opc/html/"
