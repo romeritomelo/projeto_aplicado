@@ -97,7 +97,7 @@ $usuarioAutenticado = isset($_SESSION['usuario_id']);
             
             <!-- CONTAINER DA FOTO ADICIONADO AQUI -->
             <div class="foto-destaque-container">
-                <img src="css/eu.png" alt="Romerito Melo" class="foto-perfil-redonda">
+                <img src="css/img.png" alt="Romerito Melo" class="foto-perfil-redonda">
             </div>
 
             <div class="dashboard">
