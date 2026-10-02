@@ -1,6 +1,6 @@
 # Finanças+
 
-Aplicação web desenvolvida como Projeto Aplicado da Pós-Graduação EAD em Segurança da Informação e Análise Forense da UNCISAL.
+Aaplicação web desenvolvida como Projeto Aplicado da Pós-Graduação EAD em Segurança da Informação e Análise Forense da UNCISAL.
 
 O projeto consiste em uma aplicação web de controle financeiro com autenticação de usuários e mecanismos de segurança implementados tanto na aplicação quanto na infraestrutura de hospedagem.
 
